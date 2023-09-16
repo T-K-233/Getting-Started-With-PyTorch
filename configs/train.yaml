@@ -1,6 +1,7 @@
 
 dataloader:
-  path: "data/names/*.txt"
+  # path: "data/names/*.txt"
+  path: "data/eng-fra.txt"
 
 model:
   # hidden_layer_size: 32
