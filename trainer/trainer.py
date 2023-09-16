@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import PIL.Image
 
-class Trainer:
+class EncoderTrainer:
     def __init__(self, model, criterion, optimizer, logger, dataloader):
         self.model = model
         self.criterion = criterion
@@ -18,8 +18,6 @@ class Trainer:
     def step(self, category_tensor, line_tensor):
         hidden = self.model.initHidden()
 
-        # self.model.zero_grad()
-
         for i in range(line_tensor.size()[0]):
             output, hidden = self.model(line_tensor[i], hidden)
 
@@ -28,11 +26,6 @@ class Trainer:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
-        # Add parameters' gradients to their values, multiplied by learning rate
-        # learning_rate = 0.005 # If you set this too high, it might explode. If too low, it might not learn
-        # for p in self.model.parameters():
-        #     p.data.add_(p.grad.data, alpha=-learning_rate)
 
         return output, loss.item()
 
@@ -45,11 +38,8 @@ class Trainer:
             
             self.logger.log(step, loss, guess, guess_i, category, line)
 
-            
-
-
-
-
+      
+      
             if step % self.logger.plot_every == 0:
 
                 # Keep track of correct guesses in a confusion matrix
@@ -61,7 +51,7 @@ class Trainer:
                     hidden = self.model.initHidden()
 
                     for i in range(line_tensor.size()[0]):
-                        output, hidden = self.model(line_tensor[i], hidden)
+                        output, hidden = self.model.forward(line_tensor[i], hidden)
 
                     return output
 
@@ -94,4 +84,46 @@ class Trainer:
                 # Convert PNG buffer to TF image
                 self.logger.writer.add_figure('confusion_matrix', fig, step)
                 plt.close(fig)
+
+
+
+
+
+
+
+
+class DecoderTrainer:
+    def __init__(self, model, criterion, optimizer, logger, dataloader):
+        self.model = model
+        self.criterion = criterion
+        self.optimizer = optimizer
+        self.logger = logger
+        self.dataloader = dataloader
+
+
+    def step(self, category_tensor, input_line_tensor, target_line_tensor):
+        target_line_tensor.unsqueeze_(-1)
+        hidden = self.model.initHidden()
+
+        self.optimizer.zero_grad()
+        loss = torch.Tensor([0])
+
+        for i in range(input_line_tensor.size()[0]):
+            output, hidden = self.model.forward(category_tensor, input_line_tensor[i], hidden)
+            l = self.criterion(output, target_line_tensor[i])
+            loss += l
+
+        loss.backward()
+        self.optimizer.step()
+
+        return output, loss.item() / input_line_tensor.size(0)
+
+    def train(self, n_iters):
+        for step in range(1, n_iters + 1):
+            print(step)
+            category_tensor, input_line_tensor, target_line_tensor = self.dataloader.randomTrainingExample2()
+            output, loss = self.step(category_tensor, input_line_tensor, target_line_tensor)
+            
+            
+            self.logger.add_scalar("loss", loss, step)
 

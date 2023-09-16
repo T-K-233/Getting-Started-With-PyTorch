@@ -3,7 +3,8 @@ dataloader:
   path: "data/names/*.txt"
 
 model:
-  hidden_layer_size: 32
+  # hidden_layer_size: 32
+  hidden_layer_size: 128
   path: ./logs/model.pth
 
 trainer:

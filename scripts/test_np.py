@@ -6,13 +6,13 @@ import numpy as np
 import torch
 
 from dataloader import Dataloader
-from model import RNN_NP
+from model import EncoderRNN_NP
 
 
 dataloader = Dataloader()
 
 n_hidden = 32
-model = RNN_NP(dataloader.n_letters, n_hidden, dataloader.n_categories)
+model = EncoderRNN_NP(dataloader.n_letters, n_hidden, dataloader.n_categories)
 
 model.load("./logs/model.json")
 

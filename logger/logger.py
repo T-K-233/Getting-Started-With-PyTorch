@@ -27,7 +27,7 @@ class Logger:
     def log(self, itr, loss, guess, guess_i, category, line):
         self.current_loss += loss
         
-        self.writer.add_scalar('Loss/train', loss, itr)
+        self.writer.add_scalar("Loss/train", loss, itr)
 
         # Print ``iter`` number, loss, name and guess
         if itr % self.print_every == 0:
@@ -38,3 +38,7 @@ class Logger:
         if itr % self.plot_every == 0:
             self.all_losses.append(self.current_loss / self.plot_every)
             self.current_loss = 0
+
+    def add_scalar(self, tag, scalar_value, step):
+        if step % self.plot_every == 0:
+            self.writer.add_scalar(tag, scalar_value, step)

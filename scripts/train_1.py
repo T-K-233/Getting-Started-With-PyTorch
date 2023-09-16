@@ -7,9 +7,9 @@ import torch.nn as nn
 from omegaconf import OmegaConf
 
 from dataloader import Dataloader
-from model import RNN
+from model import EncoderRNN
 from logger import Logger
-from trainer import Trainer
+from trainer import EncoderTrainer
 
 
 conf = OmegaConf.load('./configs/train.yaml')
@@ -26,7 +26,7 @@ for i in range(10):
     print('category =', category, '/ line =', line)
 
 
-model = RNN(dataloader.n_letters, conf.model.hidden_layer_size, dataloader.n_categories)
+model = EncoderRNN(dataloader.n_letters, conf.model.hidden_layer_size, dataloader.n_categories)
 
 
 criterion = nn.NLLLoss()
@@ -34,7 +34,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=conf.trainer.learning_rate)
 
 logger = Logger()
 
-trainer = Trainer(
+trainer = EncoderTrainer(
     model=model, 
     criterion=criterion, 
     optimizer=optimizer,

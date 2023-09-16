@@ -6,13 +6,13 @@ import json
 
 import numpy as np
 from dataloader import Dataloader
-from model import RNN
+from model import EncoderRNN
 
 
 dataloader = Dataloader()
 
 n_hidden = 32
-model = RNN(dataloader.n_letters, n_hidden, dataloader.n_categories)
+model = EncoderRNN(dataloader.n_letters, n_hidden, dataloader.n_categories)
 
 print("shape of network:", dataloader.n_letters, n_hidden, dataloader.n_categories)
 

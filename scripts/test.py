@@ -6,7 +6,7 @@ import torch
 from omegaconf import OmegaConf
 
 from dataloader import Dataloader
-from model import RNN
+from model import EncoderRNN
 
 
 conf = OmegaConf.load('./configs/train.yaml')
@@ -14,7 +14,7 @@ conf = OmegaConf.load('./configs/train.yaml')
 dataloader = Dataloader(conf.dataloader.path)
 
 
-model = RNN(dataloader.n_letters, conf.model.hidden_layer_size, dataloader.n_categories)
+model = EncoderRNN(dataloader.n_letters, conf.model.hidden_layer_size, dataloader.n_categories)
 
 model.load(conf.model.path)
 
