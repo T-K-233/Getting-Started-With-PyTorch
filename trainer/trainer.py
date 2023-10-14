@@ -2,10 +2,8 @@ import io
 
 import numpy as np
 import torch
-from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import PIL.Image
 
 from dataloader import Dataloader
 from model import RNN

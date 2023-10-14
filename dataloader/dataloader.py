@@ -33,8 +33,9 @@ class Dataloader:
     def randomChoice(l):
         return l[random.randint(0, len(l) - 1)]
 
-    def __init__(self, dataset_path="data/names/*.txt"):
+    def __init__(self, dataset_path="data/names/*.txt", device="cpu"):
         self.dataset_path = dataset_path
+        self.device = device
     
     def load(self):
         for filename in Dataloader.findFiles(self.dataset_path):
@@ -55,14 +56,14 @@ class Dataloader:
 
     # Just for demonstration, turn a letter into a <1 x n_letters> Tensor
     def letterToTensor(self, letter):
-        tensor = torch.zeros(1, self.n_letters)
+        tensor = torch.zeros(1, self.n_letters).to(self.device)
         tensor[0][self.letterToIndex(letter)] = 1
         return tensor
 
     # Turn a line into a <line_length x 1 x n_letters>,
     # or an array of one-hot letter vectors
     def lineToTensor(self, line):
-        tensor = torch.zeros(len(line), 1, self.n_letters)
+        tensor = torch.zeros(len(line), 1, self.n_letters).to(self.device)
         for li, letter in enumerate(line):
             tensor[li][0][self.letterToIndex(letter)] = 1
         return tensor
@@ -70,7 +71,7 @@ class Dataloader:
     def getRandom(self):
         category = Dataloader.randomChoice(self.all_categories)
         line = Dataloader.randomChoice(self.category_lines[category])
-        category_tensor = torch.tensor([self.all_categories.index(category)], dtype=torch.long)
+        category_tensor = torch.tensor([self.all_categories.index(category)], dtype=torch.long).to(self.device)
         line_tensor = self.lineToTensor(line)
         return category, line, category_tensor, line_tensor
 

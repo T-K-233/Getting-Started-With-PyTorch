@@ -12,7 +12,7 @@ class RNN(nn.Module):
         self.output_size = output_size
         
     def initializeHiddenState(self):
-        self.prev_hidden_state = torch.zeros(1, self.hidden_size, device=self.device)
+        self.prev_hidden_state = torch.zeros(1, self.hidden_size).to(self.device)
 
     def load(self, path):
         self.load_state_dict(torch.load(path))
@@ -24,12 +24,12 @@ class EncoderRNN(RNN):
     def __init__(self, input_size, hidden_size, output_size, device="cpu"):
         super(EncoderRNN, self).__init__(input_size, hidden_size, output_size, device)
 
-        self.i2h = nn.Linear(self.input_size + self.hidden_size, self.hidden_size)
-        self.h2o = nn.Linear(self.hidden_size, self.output_size)
-        self.softmax = nn.LogSoftmax(dim=1)
+        self.i2h = nn.Linear(self.input_size + self.hidden_size, self.hidden_size).to(self.device)
+        self.h2o = nn.Linear(self.hidden_size, self.output_size).to(self.device)
+        self.softmax = nn.LogSoftmax(dim=1).to(self.device)
 
     def forward(self, input):
-        combined = torch.cat((input, self.prev_hidden_state), 1)
+        combined = torch.cat((input, self.prev_hidden_state), 1).to(self.device)
         
         hidden = self.i2h(combined)
         output = self.h2o(hidden)
