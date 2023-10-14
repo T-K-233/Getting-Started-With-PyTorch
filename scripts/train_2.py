@@ -37,7 +37,7 @@ max_length = 20
 # Sample from a category and starting letter
 def sample(category, start_letter='A'):
     with torch.no_grad():  # no need to track history in sampling
-        category_tensor = dataloader.categoryTensor(category)
+        category_tensor = dataloader.categoryToTensor(category)
         input = dataloader.inputTensor(start_letter)
         hidden = model.initHidden()
 

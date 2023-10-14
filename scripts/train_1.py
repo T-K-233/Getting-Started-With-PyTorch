@@ -1,6 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import datetime
 
 import torch
 import torch.nn as nn
@@ -13,26 +14,35 @@ from trainer import EncoderTrainer
 
 
 conf = OmegaConf.load("./configs/train.yaml")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 dataloader = Dataloader(conf.dataloader.path)
 
-print(dataloader.findFiles('data/names/*.txt'))
-print(dataloader.unicodeToAscii('Ślusàrski'))
-print(dataloader.letterToTensor('J'))
-print(dataloader.lineToTensor('Jones').size())
+print("Loading datasets:", Dataloader.findFiles('data/names/*.txt'))
+dataloader.load()
+print("")
 
-for i in range(10):
-    category, line, category_tensor, line_tensor = dataloader.randomTrainingExample()
-    print('category =', category, '/ line =', line)
+# print(dataloader.unicodeToAscii('Ślusàrski'))
+# print(dataloader.letterToTensor('J'))
+# print(dataloader.lineToTensor('Jones').size())
 
+# for i in range(10):
+#     category, line, category_tensor, line_tensor = dataloader.getRandom()
+#     print('category =', category, '/ line =', line)
 
-model = EncoderRNN(dataloader.n_letters, conf.model.hidden_layer_size, dataloader.n_categories)
+model = EncoderRNN(dataloader.n_letters, conf.model.hidden_layer_size, dataloader.n_categories, device)
 
 
 criterion = nn.NLLLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=conf.trainer.learning_rate)
 
-logger = Logger()
+logger = Logger(
+    total_steps=conf.trainer.n_iters,
+    logdir="./logs/fit/" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+      + "_lr{lr}_hidden{hidden}".format(
+          lr=conf.trainer.learning_rate, 
+          hidden=conf.model.hidden_layer_size)
+    )
 
 trainer = EncoderTrainer(
     model=model, 
@@ -40,7 +50,6 @@ trainer = EncoderTrainer(
     optimizer=optimizer,
     logger=logger,
     dataloader=dataloader)
-
 
 trainer.train(conf.trainer.n_iters)
 
