@@ -1,4 +1,5 @@
 import io
+import os
 
 import numpy as np
 import torch
@@ -47,6 +48,7 @@ class EncoderTrainer:
             if step % self.logger.log_every == 0:
                 self.logger.log(step, loss)
                 self.generateLoggerData(step)
+                self.model.save(os.path.join(self.logger.logdir, "model_{steps}.pth".format(steps=step)))
 
     def generateLoggerData(self, step):
         # Keep track of correct guesses in a confusion matrix

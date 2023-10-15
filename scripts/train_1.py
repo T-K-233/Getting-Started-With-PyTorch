@@ -36,12 +36,16 @@ model = EncoderRNN(dataloader.n_letters, conf.model.hidden_layer_size, dataloade
 criterion = nn.NLLLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=conf.trainer.learning_rate)
 
+logdir = "./logs/fit/" \
+    + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") \
+    + "_lr{lr}_hidden{hidden}".format(
+        lr=conf.trainer.learning_rate, 
+        hidden=conf.model.hidden_layer_size)
+
 logger = Logger(
     total_steps=conf.trainer.n_iters,
-    logdir="./logs/fit/" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-      + "_lr{lr}_hidden{hidden}".format(
-          lr=conf.trainer.learning_rate, 
-          hidden=conf.model.hidden_layer_size)
+    log_every=conf.logger.log_every,
+    logdir=logdir
     )
 
 trainer = EncoderTrainer(
@@ -52,8 +56,5 @@ trainer = EncoderTrainer(
     dataloader=dataloader)
 
 trainer.train(conf.trainer.n_iters)
-
-model.save(conf.model.path)
-
 
 

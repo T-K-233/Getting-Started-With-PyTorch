@@ -9,5 +9,9 @@ model:
   path: ./logs/model.pth
 
 trainer:
-  learning_rate: 0.01
-  n_iters: 100000
+  learning_rate: 0.005
+  # n_iters: 100000
+  n_iters: 300000
+
+logger:
+  log_every: 10000
