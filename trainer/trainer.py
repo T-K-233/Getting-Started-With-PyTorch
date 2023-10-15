@@ -41,7 +41,7 @@ class EncoderTrainer:
         return output
 
     def train(self, n_iters):
-        for step in range(n_iters):
+        for step in range(n_iters+1):
             category, line, category_tensor, line_tensor = self.dataloader.getRandom()
             output, loss = self.step(category_tensor, line_tensor)
     
